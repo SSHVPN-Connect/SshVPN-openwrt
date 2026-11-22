@@ -4,6 +4,9 @@
 init_proto "$@"
 
 proto_ssh_tunnel_init_config() {
+	available=1
+	no_device=1
+	no_device_config=1
 	proto_config_add_string server
 	proto_config_add_int port
 	proto_config_add_string username
