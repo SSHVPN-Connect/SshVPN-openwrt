@@ -11,12 +11,15 @@ Shadowsocks. Интерфейс OpenWrt соединяет локальный TU
 ## Готовый пакет
 
 В каталоге [`dist/`](dist/) находится
-[APK для OpenWrt 25.12.5 / mediatek/filogic](dist/luci-proto-ssh-tunnel-0.1.2-r1.apk)
+[APK для OpenWrt 25.12.5 / mediatek/filogic](dist/luci-proto-ssh-tunnel-0.1.3-r1.apk)
 (например, Xiaomi Mi Router AX3000T). Установка на роутере:
 
 ```sh
-apk add --allow-untrusted /tmp/luci-proto-ssh-tunnel-0.1.2-r1.apk
+apk add --allow-untrusted /tmp/luci-proto-ssh-tunnel-0.1.3-r1.apk
 ```
+
+Проекты: [пакет OpenWrt](https://github.com/SSHVPN-Connect/SshVPN-openwrt) и
+[SSH VPN клиент](https://github.com/SSHVPN-Connect/sshvpn-client).
 
 Сначала скопируйте APK в `/tmp` по SSH или через LuCI. Настроенные репозитории
 прошивки должны быть доступны: менеджер пакетов установит зависимости
@@ -119,6 +122,9 @@ SDK и устанавливайте зависимости из репозито
 доступ пользователем `root` на Debian/Ubuntu. В форме LuCI можно указать пароль
 либо путь к приватному ключу, уже установленному на роутере. Первый ключ
 SSH-сервера автоматически принимается в `known_hosts` пользователя root.
+
+Имя виртуального сетевого устройства назначается автоматически и уникально для
+каждого интерфейса; вручную задавать имя туннеля не нужно.
 
 Интерфейс использует адреса `172.31.255.2/30` и `172.31.255.1`. На удалённом
 сервере одновременно поддерживается одно подключение, как и в Windows-клиенте.

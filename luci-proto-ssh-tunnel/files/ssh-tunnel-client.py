@@ -10,6 +10,7 @@ import sys
 
 MTU = 1420
 TUNSETIFF = 0x400454CA
+TUNSETPERSIST = 0x400454CB
 IFF_TUN = 0x0001
 IFF_NO_PI = 0x1000
 
@@ -21,14 +22,47 @@ def write_all(fd, data):
         view = view[count:]
 
 
+def tun_ioctl(fd, device):
+    if not re.fullmatch(r"[a-zA-Z0-9_.-]{1,15}", device):
+        raise RuntimeError("Invalid TUN device name")
+    fcntl.ioctl(fd, TUNSETIFF, struct.pack("16sH22x", device.encode(), IFF_TUN | IFF_NO_PI))
+
+
+def create_tun(device):
+    tun = os.open("/dev/net/tun", os.O_RDWR | os.O_CLOEXEC)
+    try:
+        tun_ioctl(tun, device)
+        fcntl.ioctl(tun, TUNSETPERSIST, 1)
+    finally:
+        os.close(tun)
+    subprocess.run(["/sbin/ip", "link", "set", "dev", device, "mtu", str(MTU), "up"], check=True)
+
+
+def delete_tun(device):
+    try:
+        tun = os.open("/dev/net/tun", os.O_RDWR | os.O_CLOEXEC)
+    except FileNotFoundError:
+        return
+    try:
+        tun_ioctl(tun, device)
+        fcntl.ioctl(tun, TUNSETPERSIST, 0)
+    finally:
+        os.close(tun)
+
+
 def main():
+    if len(sys.argv) == 3 and sys.argv[1] in ("--create", "--delete"):
+        (create_tun if sys.argv[1] == "--create" else delete_tun)(sys.argv[2])
+        return
     if len(sys.argv) != 7:
         raise RuntimeError("usage: ssh-tunnel-client HOST PORT USER DEVICE KEY AUTH")
     host, port, username, device, key, auth = sys.argv[1:]
-    if not re.fullmatch(r"[a-zA-Z0-9_.-]+", device):
-        raise RuntimeError("Invalid TUN device name")
     tun = os.open("/dev/net/tun", os.O_RDWR | os.O_CLOEXEC)
-    fcntl.ioctl(tun, TUNSETIFF, struct.pack("16sH", device.encode(), IFF_TUN | IFF_NO_PI))
+    tun_ioctl(tun, device)
+    # The protocol handler created a persistent device so netifd could
+    # register it before starting this process. From here on, keep it alive
+    # only while this file descriptor remains open.
+    fcntl.ioctl(tun, TUNSETPERSIST, 0)
     subprocess.run(["/sbin/ip", "link", "set", "dev", device, "mtu", str(MTU), "up"], check=True)
 
     ssh = ["/usr/bin/ssh", "-T", "-p", port, "-o", "ConnectTimeout=15", "-o", "StrictHostKeyChecking=accept-new"]

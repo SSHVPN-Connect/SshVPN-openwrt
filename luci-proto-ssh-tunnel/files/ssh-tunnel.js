@@ -4,13 +4,19 @@
 
 return network.registerProtocol('ssh_tunnel', {
 	getI18n: function() { return _('SSH Tunnel'); },
-	getIfname: function() { return this._ubus('l3_device') || 'sshvpn0'; },
+	getIfname: function() { return this._ubus('l3_device') || this.sid; },
 	getPackageName: function() { return 'network'; },
 	isFloating: function() { return false; },
 	isVirtual: function() { return true; },
-	getDevices: function() { return [ this.getOption('device') || 'sshvpn0' ]; },
+	getDevices: function() { return [ this.getIfname() ]; },
 	renderFormOptions: function(s) {
 		var o;
+		o = s.taboption('general', form.DummyValue, '_project_links', _('Project information'));
+		o.rawhtml = true;
+		o.cfgvalue = function() {
+			return '<a href="https://github.com/SSHVPN-Connect/SshVPN-openwrt" target="_blank" rel="noopener noreferrer">OpenWrt package</a>' +
+				'<br /><a href="https://github.com/SSHVPN-Connect/sshvpn-client" target="_blank" rel="noopener noreferrer">SSH VPN client</a>';
+		};
 		o = s.taboption('general', form.Value, 'server', _('SSH server'));
 		o.rmempty = false;
 		o.placeholder = 'vpn.example.com';
@@ -26,9 +32,6 @@ return network.registerProtocol('ssh_tunnel', {
 		o.description = _('The private key must already exist on the router and be readable by root.');
 		o = s.taboption('general', form.Value, 'password', _('SSH password'));
 		o.password = true;
-		o.rmempty = true;
-		o = s.taboption('general', form.Value, 'device', _('Tunnel device'));
-		o.default = 'sshvpn0';
 		o.rmempty = true;
 	}
 });
