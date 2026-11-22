@@ -1,7 +1,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=luci-proto-ssh-tunnel
-PKG_VERSION:=0.1.0
+PKG_VERSION:=0.1.1
 PKG_RELEASE:=1
 
 include $(INCLUDE_DIR)/package.mk
@@ -30,7 +30,7 @@ define Package/luci-proto-ssh-tunnel/install
 	$(INSTALL_DIR) $(1)/usr/share/ssh-tunnel
 	$(INSTALL_DATA) ./files/install-server.sh $(1)/usr/share/ssh-tunnel/install-server.sh
 	$(INSTALL_DIR) $(1)/www/luci-static/resources/protocol
-	$(INSTALL_DATA) ./files/ssh-tunnel.js $(1)/www/luci-static/resources/protocol/ssh-tunnel.js
+	$(INSTALL_DATA) ./files/ssh-tunnel.js $(1)/www/luci-static/resources/protocol/ssh_tunnel.js
 endef
 
 $(eval $(call BuildPackage,luci-proto-ssh-tunnel))
