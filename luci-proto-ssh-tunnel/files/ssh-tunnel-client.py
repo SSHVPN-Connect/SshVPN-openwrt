@@ -83,7 +83,7 @@ def main():
     if result.returncode:
         sys.stderr.buffer.write(result.stderr)
         raise RuntimeError("Server setup failed. The configured SSH account must be root.")
-    ssh += ["ssh-tunnel-vpn"]
+    ssh += ["/usr/local/libexec/ssh-tunnel-vpn"]
 
     proc = subprocess.Popen(ssh, stdin=subprocess.PIPE, stdout=subprocess.PIPE, bufsize=0)
     greeting = proc.stdout.readline()
