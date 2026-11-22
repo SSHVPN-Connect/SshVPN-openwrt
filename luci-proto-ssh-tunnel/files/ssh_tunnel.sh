@@ -1,6 +1,6 @@
 #!/bin/sh
 
-. /lib/netifd/proto/proto.sh
+. /lib/netifd/netifd-proto.sh
 init_proto "$@"
 
 proto_ssh_tunnel_init_config() {
