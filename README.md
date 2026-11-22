@@ -11,11 +11,11 @@ Shadowsocks. Интерфейс OpenWrt соединяет локальный TU
 ## Готовый пакет
 
 В каталоге [`dist/`](dist/) находится
-[APK для OpenWrt 25.12.5 / mediatek/filogic](dist/luci-proto-ssh-tunnel-0.1.0-r2.apk)
+[APK для OpenWrt 25.12.5 / mediatek/filogic](dist/luci-proto-ssh-tunnel-0.1.0-r3.apk)
 (например, Xiaomi Mi Router AX3000T). Установка на роутере:
 
 ```sh
-apk add --allow-untrusted /tmp/luci-proto-ssh-tunnel-0.1.0-r2.apk
+apk add --allow-untrusted /tmp/luci-proto-ssh-tunnel-0.1.0-r3.apk
 ```
 
 Проекты: [пакет OpenWrt](https://github.com/SSHVPN-Connect/SshVPN-openwrt) и

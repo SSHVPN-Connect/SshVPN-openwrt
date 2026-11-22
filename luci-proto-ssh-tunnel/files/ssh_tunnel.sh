@@ -28,7 +28,7 @@ proto_ssh_tunnel_setup() {
 		return
 	fi
 	proto_init_update "$device" 1
-	proto_add_ipv4_address 172.31.255.2 30 172.31.255.1
+	proto_add_ipv4_address 172.31.255.2 30 "" 172.31.255.1
 	proto_send_update "$interface"
 	if [ -n "$identity_file" ]; then
 		proto_run_command "$interface" /usr/libexec/ssh-tunnel-client "$server" "$port" "$username" "$device" "$identity_file" key
