@@ -1,5 +1,7 @@
 # SSH Tunnel for OpenWrt
 
+<img src="assets/ssh-tunnel-logo.png" width="72" height="72" alt="SSH Tunnel logo">
+
 [Русский](README.md) | [English](README.en.md)
 
 Adds the **SSH Tunnel** protocol to LuCI under **Network → Interfaces → Add new
