@@ -18,22 +18,28 @@
 
 - [OpenWrt 25.12.5](https://github.com/SSHVPN-Connect/SshVPN-openwrt/releases/tag/v0.1.0)
 - [OpenWrt 25.12.6](https://github.com/SSHVPN-Connect/SshVPN-openwrt/releases/tag/openwrt-25.12.6)
+- [OpenWrt 24.10.4 (IPK)](https://github.com/SSHVPN-Connect/SshVPN-openwrt/releases/tag/openwrt-24.10.4)
 
 1. Откройте [релизы](https://github.com/SSHVPN-Connect/SshVPN-openwrt/releases)
-   и скачайте APK, соответствующий версии OpenWrt, архитектуре, target и
+   и скачайте пакет, соответствующий версии OpenWrt, архитектуре, target и
    subtarget вашего устройства. Имена файлов содержат эти значения. Например,
    для Xiaomi Mi Router AX3000T ищите файл с `mediatek_filogic` в имени.
 2. Скопируйте файл на роутер, например в `/tmp`, и установите:
 
    ```sh
-   apk add --allow-untrusted /tmp/<имя-файла>.apk
+   # OpenWrt 25.12.x
+   apk add --allow-untrusted /tmp/luci-proto-ssh-tunnel-0.1.0-r8.apk
+
+   # OpenWrt 24.10.4
+   opkg update
+   opkg install /tmp/luci-proto-ssh-tunnel_0.1.0-r8_all.ipk
    ```
 
 3. В LuCI создайте интерфейс: **Сеть → Интерфейсы → Добавить интерфейс → SSH Tunnel**.
 
-Версию, архитектуру и target/subtarget можно посмотреть командой
-`cat /etc/openwrt_release`. Для прошивок с `opkg` соберите пакет из
-соответствующего SDK и установите полученный `.ipk` командой `opkg install`.
+Замените имя файла в команде на имя скачанного пакета. Версию, архитектуру и
+target/subtarget можно посмотреть командой `cat /etc/openwrt_release`.
+Для других версий прошивки соберите пакет через соответствующий SDK.
 
 ## Сборка
 

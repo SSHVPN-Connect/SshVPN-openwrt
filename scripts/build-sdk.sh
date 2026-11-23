@@ -14,9 +14,12 @@ output_dir="${2:-$repo_dir/dist}"
 mkdir -p -- "$output_dir"
 output_dir="$(cd -- "$output_dir" && pwd)"
 
-if [[ ! -f "$sdk_dir/include/toplevel.mk" || ! -f "$sdk_dir/.config" ]]; then
+if [[ ! -f "$sdk_dir/include/toplevel.mk" ]]; then
 	echo "Error: '$sdk_dir' does not look like an extracted OpenWrt SDK." >&2
 	exit 1
+fi
+if [[ ! -f "$sdk_dir/.config" ]]; then
+	make -C "$sdk_dir" defconfig
 fi
 
 sdk_name="$(basename -- "$sdk_dir")"
@@ -42,13 +45,13 @@ mkdir -p -- "$sdk_package_dir"
 cp -a -- "$source_dir/." "$sdk_package_dir/"
 
 echo "Building $package_name for OpenWrt $openwrt_version ($board/$subtarget)"
-make -C "$sdk_package_dir" TOPDIR="$sdk_dir" compile V=s
+make -C "$sdk_package_dir" TOPDIR="$sdk_dir" "CONFIG_PACKAGE_$package_name=m" compile V=s
 
-artifact="$(find "$sdk_dir/bin/packages" -type f \
-	\( -name "$package_name-*.apk" -o -name "$package_name-*.ipk" \) \
+artifact="$(find "$sdk_dir/bin" -type f \
+	\( -name "$package_name-*.apk" -o -name "${package_name}_*.ipk" \) \
 	-print -quit)"
 if [[ -z "$artifact" ]]; then
-	echo "Error: build succeeded but no .apk/.ipk artifact was found under $sdk_dir/bin/packages." >&2
+	echo "Error: build succeeded but no .apk/.ipk artifact was found under $sdk_dir/bin." >&2
 	exit 1
 fi
 
