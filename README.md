@@ -13,33 +13,28 @@
 
 ## Установка
 
-Релизы привязаны к версии прошивки. Выбирайте релиз по значению
-`DISTRIB_RELEASE` из `/etc/openwrt_release`.
+Выполните в SSH-консоли роутера от `root`:
 
-- [OpenWrt 25.12.5](https://github.com/SSHVPN-Connect/SshVPN-openwrt/releases/tag/v0.1.0)
-- [OpenWrt 25.12.6](https://github.com/SSHVPN-Connect/SshVPN-openwrt/releases/tag/openwrt-25.12.6)
-- [OpenWrt 24.10.4 (IPK)](https://github.com/SSHVPN-Connect/SshVPN-openwrt/releases/tag/openwrt-24.10.4)
+```sh
+installer=$(mktemp /tmp/ssh-tunnel-install.XXXXXX) &&
+  wget -T 15 -O "$installer" https://raw.githubusercontent.com/SSHVPN-Connect/SshVPN-openwrt/main/scripts/install.sh &&
+  sh "$installer"
+```
 
-1. Откройте [релизы](https://github.com/SSHVPN-Connect/SshVPN-openwrt/releases)
-   и скачайте пакет, соответствующий версии OpenWrt, архитектуре, target и
-   subtarget вашего устройства. Имена файлов содержат эти значения. Например,
-   для Xiaomi Mi Router AX3000T ищите файл с `mediatek_filogic` в имени.
-2. Скопируйте файл на роутер, например в `/tmp`, и установите:
+Скрипт определяет версию OpenWrt и платформу, скачивает подходящий пакет,
+проверяет SHA-256 и устанавливает пакет с зависимостями. Если адрес релиза
+недоступен, скрипт пробует скачать пакет через GitHub API.
 
-   ```sh
-   # OpenWrt 25.12.x
-   apk add --allow-untrusted /tmp/luci-proto-ssh-tunnel-0.1.0-r8.apk
+Если роутер не может скачать сам скрипт по ссылке выше, скопируйте
+[install.sh](scripts/install.sh) в `/tmp` и выполните `sh /tmp/install.sh`.
 
-   # OpenWrt 24.10.4
-   opkg update
-   opkg install /tmp/luci-proto-ssh-tunnel_0.1.0-r8_all.ipk
-   ```
+Пакеты для ручной установки доступны в релизах
+[24.10.4](https://github.com/SSHVPN-Connect/SshVPN-openwrt/releases/tag/openwrt-24.10.4),
+[25.12.5](https://github.com/SSHVPN-Connect/SshVPN-openwrt/releases/tag/v0.1.0) и
+[25.12.6](https://github.com/SSHVPN-Connect/SshVPN-openwrt/releases/tag/openwrt-25.12.6).
+Для другой версии прошивки используйте соответствующий SDK.
 
-3. В LuCI создайте интерфейс: **Сеть → Интерфейсы → Добавить интерфейс → SSH Tunnel**.
-
-Замените имя файла в команде на имя скачанного пакета. Версию, архитектуру и
-target/subtarget можно посмотреть командой `cat /etc/openwrt_release`.
-Для других версий прошивки соберите пакет через соответствующий SDK.
+После установки откройте **Сеть → Интерфейсы → Добавить интерфейс → SSH Tunnel**.
 
 ## Сборка
 

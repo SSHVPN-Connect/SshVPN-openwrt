@@ -13,33 +13,28 @@ server component from
 
 ## Install
 
-Each release targets a specific firmware version. Choose the release that
-matches `DISTRIB_RELEASE` in `/etc/openwrt_release`.
+Run this in the router's SSH session as `root`.
 
-- [OpenWrt 25.12.5](https://github.com/SSHVPN-Connect/SshVPN-openwrt/releases/tag/v0.1.0)
-- [OpenWrt 25.12.6](https://github.com/SSHVPN-Connect/SshVPN-openwrt/releases/tag/openwrt-25.12.6)
-- [OpenWrt 24.10.4 (IPK)](https://github.com/SSHVPN-Connect/SshVPN-openwrt/releases/tag/openwrt-24.10.4)
+```sh
+installer=$(mktemp /tmp/ssh-tunnel-install.XXXXXX) &&
+  wget -T 15 -O "$installer" https://raw.githubusercontent.com/SSHVPN-Connect/SshVPN-openwrt/main/scripts/install.sh &&
+  sh "$installer"
+```
 
-1. Open the [releases page](https://github.com/SSHVPN-Connect/SshVPN-openwrt/releases)
-   and download the package matching your device's OpenWrt version, architecture,
-   target, and subtarget. The filename contains these values. For example, look
-   for `mediatek_filogic` for the Xiaomi Mi Router AX3000T.
-2. Copy the file to the router, for example to `/tmp`, and install it:
+The script detects the OpenWrt version and platform, downloads the matching
+package, verifies its SHA-256 checksum, and installs it with its dependencies.
+If the release URL is unreachable, it tries the GitHub API.
 
-   ```sh
-   # OpenWrt 25.12.x
-   apk add --allow-untrusted /tmp/luci-proto-ssh-tunnel-0.1.0-r8.apk
+If the router cannot download the script from the URL above, copy
+[install.sh](scripts/install.sh) to `/tmp` and run `sh /tmp/install.sh`.
 
-   # OpenWrt 24.10.4
-   opkg update
-   opkg install /tmp/luci-proto-ssh-tunnel_0.1.0-r8_all.ipk
-   ```
+For manual installation, download the package for
+[24.10.4](https://github.com/SSHVPN-Connect/SshVPN-openwrt/releases/tag/openwrt-24.10.4),
+[25.12.5](https://github.com/SSHVPN-Connect/SshVPN-openwrt/releases/tag/v0.1.0), or
+[25.12.6](https://github.com/SSHVPN-Connect/SshVPN-openwrt/releases/tag/openwrt-25.12.6).
+For other firmware versions, use the matching SDK.
 
-3. In LuCI, add an interface: **Network → Interfaces → Add new interface → SSH Tunnel**.
-
-Use the name of the file you downloaded in the command. Check the installed
-version, architecture, and target/subtarget with `cat /etc/openwrt_release`.
-For other firmware versions, build the package with the matching SDK.
+After installation, open **Network → Interfaces → Add new interface → SSH Tunnel**.
 
 ## Build
 
