@@ -2,7 +2,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=luci-proto-ssh-tunnel
 PKG_VERSION:=0.1.0
-PKG_RELEASE:=3
+PKG_RELEASE:=8
 
 include $(INCLUDE_DIR)/package.mk
 
@@ -11,7 +11,7 @@ define Package/luci-proto-ssh-tunnel
 	CATEGORY:=LuCI
 	SUBMENU:=Protocols
 	TITLE:=SSH Tunnel netifd protocol
-	DEPENDS:=+luci-base +netifd +kmod-tun +openssh-client +sshpass +python3-light
+	DEPENDS:=+luci-base +netifd +kmod-tun +openssh-client +openssh-keygen +sshpass +python3-light +python3-cryptodomex
 	PKGARCH:=all
 endef
 
@@ -27,6 +27,7 @@ define Package/luci-proto-ssh-tunnel/install
 	$(INSTALL_BIN) ./files/ssh_tunnel.sh $(1)/lib/netifd/proto/ssh_tunnel.sh
 	$(INSTALL_DIR) $(1)/usr/libexec
 	$(INSTALL_BIN) ./files/ssh-tunnel-client.py $(1)/usr/libexec/ssh-tunnel-client
+	$(INSTALL_BIN) ./files/ssh-tunnel-invite.py $(1)/usr/libexec/ssh-tunnel-invite
 	$(INSTALL_DIR) $(1)/usr/share/ssh-tunnel
 	$(INSTALL_DATA) ./files/install-server.sh $(1)/usr/share/ssh-tunnel/install-server.sh
 	$(INSTALL_DIR) $(1)/www/luci-static/resources/protocol

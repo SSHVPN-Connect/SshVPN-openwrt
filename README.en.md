@@ -55,10 +55,22 @@ The resulting APK or IPK will be placed in `dist/`. To choose a different output
 
 ## Configure
 
-On the first connection, the package configures the SSH VPN server. SSH access
-to the server as `root` is required. In the interface form, enter the server
-address and port, then provide either a password or the path to a private key
-that is already on the router and readable by root.
+### Share invitation code
+
+Under **Connection method**, choose **Use an invitation code** and paste the
+complete line from the Windows client's Share menu into **Share invitation code**.
+The server must have invitation support enabled by the owner's client. An
+invitation can be redeemed once and expires after 30 minutes. When the
+interface starts, the router redeems it, creates a permanent key, and saves the
+profile. The code field clears after activation. The default SSH port is `22`.
+Enter another port in **SSH port** if the server uses one.
+
+### Direct connection
+
+Under **Connection method**, choose **Enter SSH credentials manually**.
+Automatic server setup requires SSH access as `root`. Enter the server address
+and port, then provide either a password or the path to a private key that is
+already on the router and readable by root.
 
 The network device name is assigned automatically. The package uses
 `172.31.255.2/30` on the router and `172.31.255.1` on the server. The server

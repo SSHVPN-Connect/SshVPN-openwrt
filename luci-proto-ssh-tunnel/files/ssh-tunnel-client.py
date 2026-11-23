@@ -54,9 +54,12 @@ def main():
     if len(sys.argv) == 3 and sys.argv[1] in ("--create", "--delete"):
         (create_tun if sys.argv[1] == "--create" else delete_tun)(sys.argv[2])
         return
-    if len(sys.argv) != 7:
-        raise RuntimeError("usage: ssh-tunnel-client HOST PORT USER DEVICE KEY AUTH")
-    host, port, username, device, key, auth = sys.argv[1:]
+    if len(sys.argv) not in (7, 8):
+        raise RuntimeError("usage: ssh-tunnel-client HOST PORT USER DEVICE KEY AUTH [HOST_KEY_FILE]")
+    host, port, username, device, key, auth = sys.argv[1:7]
+    host_key_file = sys.argv[7] if auth == "invite" and len(sys.argv) == 8 else None
+    if auth == "invite" and not host_key_file:
+        raise RuntimeError("invited profiles require a pinned host key")
     tun = os.open("/dev/net/tun", os.O_RDWR | os.O_CLOEXEC)
     tun_ioctl(tun, device)
     # The protocol handler created a persistent device so netifd could
@@ -65,25 +68,40 @@ def main():
     fcntl.ioctl(tun, TUNSETPERSIST, 0)
     subprocess.run(["/sbin/ip", "link", "set", "dev", device, "mtu", str(MTU), "up"], check=True)
 
-    ssh = ["/usr/bin/ssh", "-T", "-p", port, "-o", "ConnectTimeout=15", "-o", "StrictHostKeyChecking=accept-new"]
+    ssh = ["/usr/bin/ssh", "-T", "-p", port, "-o", "ConnectTimeout=15"]
     # Passwords use sshpass's environment interface so the secret is not in argv.
-    if auth == "key":
+    if auth in ("key", "invite"):
         ssh += ["-o", "BatchMode=yes", "-i", key]
-    else:
+    elif auth == "password":
         ssh += ["-o", "PreferredAuthentications=password,keyboard-interactive"]
+    else:
+        raise RuntimeError("unsupported authentication mode")
+    if auth == "invite":
+        ssh += [
+            "-o", "StrictHostKeyChecking=yes",
+            "-o", "IdentitiesOnly=yes",
+            "-o", f"UserKnownHostsFile={host_key_file}",
+            "-o", "GlobalKnownHostsFile=/dev/null",
+        ]
+    else:
+        ssh += ["-o", "StrictHostKeyChecking=accept-new"]
     target = username + "@" + host
     ssh += ["--", target]
-    if auth == "password":
-        ssh = ["/usr/bin/sshpass", "-e"] + ssh
+    if auth == "invite":
+        # Invitation accounts are restricted by sshd to this exact command.
+        ssh += ["ssh-tunnel-vpn"]
+    else:
+        if auth == "password":
+            ssh = ["/usr/bin/sshpass", "-e"] + ssh
 
-    # First connection provisions the same handler used by the Windows client.
-    installer = "/usr/share/ssh-tunnel/install-server.sh"
-    with open(installer, "rb") as source:
-        result = subprocess.run(ssh + ["sh", "-s"], stdin=source, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    if result.returncode:
-        sys.stderr.buffer.write(result.stderr)
-        raise RuntimeError("Server setup failed. The configured SSH account must be root.")
-    ssh += ["/usr/local/libexec/ssh-tunnel-vpn"]
+        # Root profiles provision the server on first connect.
+        installer = "/usr/share/ssh-tunnel/install-server.sh"
+        with open(installer, "rb") as source:
+            result = subprocess.run(ssh + ["sh", "-s"], stdin=source, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        if result.returncode:
+            sys.stderr.buffer.write(result.stderr)
+            raise RuntimeError("Server setup failed. The configured SSH account must be root.")
+        ssh += ["/usr/local/libexec/ssh-tunnel-vpn"]
 
     proc = subprocess.Popen(ssh, stdin=subprocess.PIPE, stdout=subprocess.PIPE, bufsize=0)
     greeting = proc.stdout.readline()
