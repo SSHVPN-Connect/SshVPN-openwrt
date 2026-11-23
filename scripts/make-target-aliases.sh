@@ -8,8 +8,8 @@ fi
 
 apk=$1
 out=$2
-targets=${3:-"$(dirname "$0")/../targets/openwrt-25.12.5-targets.txt"}
 version=${VERSION:-25.12.5}
+targets=${3:-"$(dirname "$0")/../targets/openwrt-$version-targets.txt"}
 
 [ -f "$apk" ] || { echo "APK not found: $apk" >&2; exit 1; }
 [ -f "$targets" ] || { echo "Target list not found: $targets" >&2; exit 1; }
@@ -25,9 +25,9 @@ while IFS= read -r target || [ -n "$target" ]; do
 	name="luci-proto-ssh-tunnel_v${version}_${target}.apk"
 	cp "$apk" "$out/$name"
 	if command -v sha256sum >/dev/null 2>&1; then
-		sha256sum "$out/$name" >> "$sumfile"
+		(cd "$out" && sha256sum "$name") >> "$sumfile"
 	else
-		shasum -a 256 "$out/$name" >> "$sumfile"
+		(cd "$out" && shasum -a 256 "$name") >> "$sumfile"
 	fi
 done < "$targets"
 

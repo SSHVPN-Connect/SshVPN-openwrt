@@ -13,6 +13,12 @@
 
 ## Установка
 
+Релизы привязаны к версии прошивки. Выбирайте релиз по значению
+`DISTRIB_RELEASE` из `/etc/openwrt_release`.
+
+- [OpenWrt 25.12.5](https://github.com/SSHVPN-Connect/SshVPN-openwrt/releases/tag/v0.1.0)
+- [OpenWrt 25.12.6](https://github.com/SSHVPN-Connect/SshVPN-openwrt/releases/tag/openwrt-25.12.6)
+
 1. Откройте [релизы](https://github.com/SSHVPN-Connect/SshVPN-openwrt/releases)
    и скачайте APK, соответствующий версии OpenWrt, архитектуре, target и
    subtarget вашего устройства. Имена файлов содержат эти значения. Например,

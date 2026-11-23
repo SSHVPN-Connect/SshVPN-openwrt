@@ -13,6 +13,12 @@ server component from
 
 ## Install
 
+Each release targets a specific firmware version. Choose the release that
+matches `DISTRIB_RELEASE` in `/etc/openwrt_release`.
+
+- [OpenWrt 25.12.5](https://github.com/SSHVPN-Connect/SshVPN-openwrt/releases/tag/v0.1.0)
+- [OpenWrt 25.12.6](https://github.com/SSHVPN-Connect/SshVPN-openwrt/releases/tag/openwrt-25.12.6)
+
 1. Open the [releases page](https://github.com/SSHVPN-Connect/SshVPN-openwrt/releases)
    and download the APK matching your device's OpenWrt version, architecture,
    target, and subtarget. The filename contains these values. For example, look
